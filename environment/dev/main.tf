@@ -14,14 +14,14 @@ module "vpc" {
 }
 
 module "igw" {
-  source = "./modules/igw"
+  source = "../../modules/igw"
   vpc_id = module.vpc.vpc_id
   name   = var.vpc_name
   tags   = var.tags
 }
 
 module "route_tables" {
-  source              = "./modules/route_table"
+  source              = "../../modules/route-table"
   vpc_id              = module.vpc.vpc_id
   igw_id              = module.igw.igw_id
   public_subnet_ids   = module.vpc.public_subnet_ids
@@ -31,7 +31,7 @@ module "route_tables" {
 }
 
 module "ec2_public" {
-  source               = "./modules/ec2"
+  source               = "../../modules/ec2"
   ami_id               = var.ami_id
   instance_type        = var.instance_type
   key_name             = var.key_name
@@ -46,7 +46,7 @@ module "ec2_public" {
 }
 
 module "security_group" {
-  source        = "./modules/security_group"
+  source        = "../../modules/security-group"
   name          = "${var.vpc_name}-public-sg"
   description   = "Security group for public EC2"
   vpc_id        = module.vpc.vpc_id
@@ -56,7 +56,7 @@ module "security_group" {
 }
 
 module "s3_bucket" {
-  source                           = "./modules/s3"
+  source                           = "../../modules/s3"
   bucket_name                      = var.bucket_name
   force_destroy                    = var.s3_force_destroy
   versioning_enabled               = var.s3_versioning
@@ -69,7 +69,7 @@ module "s3_bucket" {
 }
 
 module "ecr_repo" {
-  source                  = "./modules/ecr"
+  source                  = "../../modules/ecr"
   name                    = var.ecr_name
   image_tag_mutability    = var.image_tag_mutability
   scan_on_push            = var.scan_on_push
@@ -83,7 +83,7 @@ module "ecr_repo" {
 }
 
 module "eks" {
-  source                    = "./modules/eks"
+  source                    = "../../modules/eks"
   cluster_name              = var.cluster_name
   cluster_role_arn          = module.eks_role.arn
   subnet_ids                = module.vpc.public_subnet_ids
@@ -95,7 +95,7 @@ module "eks" {
 }
 
 module "ssh_key" {
-  source = "./modules/ssh_key"
+  source = "../../modules/ssh_key"
   algorithm = var.algorithm
   rsa_bits = var.rsa_bits
   key_name = var.key_name
