@@ -1,169 +1,120 @@
-variable "name" {
-    type = string
-    description = "nNme of the load balancer"
-}
-variable "subnets" { 
-    type = list(string)
-    description = "List of subnet IDs"
-}
-variable "security_groups" { 
-    type = list(string)
-    description = "List of security group IDs associate with load balancer"
-}
-variable interval {
-    type = bool
-    description = "A boolean that defines whether the load balancer is internal (private) or internet-facing (public)."
-    default = false
-}
-variable "load_balancer_type" {
-  type = string
-  description = "Type of load balancer"
-}
-variable "api_name" {
-    type = string
-    description = "Name of the API"
-}
-variable "protocol_type" {
-  type = string
-  description = "Define the protocol type"
+variable "aws_region" {
+  type    = string
 }
 
-variable "ami" {
-    type = string
-    description = "Defines the base OS of image"
-}
-variable "instance_type" {
-    type = string
-    description = "Define the hardware configuration of the instance"
-}
-variable "subnet_id" {
-    type = string
-    description = "Specifies which subnet the ec2 instance launch"
-}
-variable "security_group_ids" { 
-    type = list(string)
-    description = "List of security groups IDs attached to the instance"
-}
-variable "instance_name" {
-    type = string
-    description = "Defines the instance name"
-}
-variable "function_name" {
-    type = string
-    description = "Defines the lambda function name"
-}
-variable "handler" {
-    type = string
-    description = "Specifies the entry point of lambda code"
-}
-variable "runtime" {
-    type = string
-    description = "Defines the language and version for the lambda runtime"
-}
-variable "role_arn" {
-    type = string
-    description = "Defines the IAM role"
-}
-variable "filename" {
-    type = string
-    description = "Defines the path to the zip file that consists of lambda function code"
-}
-variable "allocated_storage" {
-  type        = number
-  description = "The amount of storage (in GB) to allocate for the DB instance"
+variable "vpc_cidr" {}
+variable "vpc_name" {}
+variable "instance_tenancy" {
 }
 
-variable "engine" {
-  type        = string
-  description = "The database engine to use (e.g., mysql, postgres, oracle-ee)"
+variable "availability_zones" {
+  type = list(string)
 }
 
-variable "engine_version" {
-  type        = string
-  description = "The version of the database engine"
+variable "public_subnet_cidrs" {
+  type = list(string)
 }
 
-variable "instance_class" {
-  type        = string
-  description = "The instance type of the RDS (e.g., db.t3.micro)"
+variable "private_subnet_cidrs" {
+  type = list(string)
 }
 
-variable "db_name" {
-  type        = string
-  description = "The name of the initial database to create"
+variable "tags" {
+  type    = map(string)
+}
+variable "ami_id" {}
+variable "instance_type" {}
+variable "key_name" {}
+variable "public_sg_ingress" {
+  description = "Ingress rules for public EC2 SG"
+  type = list(object({
+    from_port   = number
+    to_port     = number
+    protocol    = string
+    cidr_blocks = list(string)
+    description = optional(string)
+  }))
 }
 
-variable "username" {
-  type        = string
-  description = "username for the database"
+variable "public_sg_egress" {
+  description = "Egress rules for public EC2 SG"
+  type = list(object({
+    from_port   = number
+    to_port     = number
+    protocol    = string
+    cidr_blocks = list(string)
+    description = optional(string)
+  }))
 }
 
-variable "password" {
-  type        = string
-  description = "password for the database"
-  sensitive   = true
+variable "bucket_name" {}
+variable "s3_force_destroy" {
+
+}
+variable "s3_versioning" {
+  
+}
+variable "s3_encryption" {
+}
+variable "s3_kms_key_id" {
+  default = ""
+}
+variable "s3_lifecycle_id" {
+}
+variable "s3_lifecycle_days" {
+  default = 30
+}
+variable "s3_noncurrent_expire_days" {
+  default = 60
 }
 
-variable "sg_id" {
-  type        = string
-  description = "Security Group ID to associate with the RDS instance"
+variable "ecr_name" {}
+variable "image_tag_mutability" {
+  default = "MUTABLE"
 }
-
-variable "subnet_group_name" {
-  type        = string
-  description = "Name of the DB subnet group for the RDS instance"
-}
-
-variable "skip_final_snapshot" {
-  type        = bool
-  description = "Whether to skip final snapshot before DB deletion"
+variable "scan_on_push" {
   default = true
 }
-variable "domain_name" {
-    type = string
-    description = "Defines the domain name"
+variable "encryption_type" {
 }
-variable "bucket_name" {
-    type = string
-    description = "Defines the Bucket name"
+variable "kms_key" {
+
 }
-variable "vpc_id" {
-    type = string
-    description = "Specifies the vpc id where security group should be created"
+variable "force_delete" {
 }
-variable "sg_name" {
-    type = string
-    description = "defines the name of security group"
+variable "lifecycle_rule_priority" {
+  default = 1
 }
-variable "vpc_cidr" {
-    type = string
-    description = "CIDR block for the vpc"
+variable "lifecycle_description" {
+  default = "Remove untagged images after limit"
 }
-variable "vpc_name" {
-    type = string
-    description = "Tag name for the vpc resource"
+variable "lifecycle_count" {
+  default = 10
 }
-variable "vpc_id" {
-  type = string
-  description = "VPC ID where IGW, NAT, and route tables will be created"
+variable "cluster_name" {}
+variable "endpoint_public_access" {
+  default = true
+}
+variable "endpoint_private_access" {
+  default = false
+}
+variable "service_ipv4_cidr" {
+  default = "172.20.0.0/16"
 }
 
-variable "igw_name" {
+variable "algorithm" {
+  description = "type of algorithm using"
   type = string
-  description = "Name for the Internet Gateway"
 }
-
-variable "eip_allocation_id" {
-  type = string
-  description = "Elastic IP allocation ID for NAT Gateway"
+variable "rsa_bits" {
+  description = "number of bits for algorithm"
+  type = number
 }
-
-variable "public_subnet_id" {
+variable "filename" {
+  description = "name of the file"
   type = string
-  description = "Subnet ID for placing the NAT Gateway"
 }
-
-variable "nat_name" {
+variable "key_name" {
+  description = "name of the key to generate"
   type = string
-  description = "Name for the NAT Gateway"
 }

@@ -1,19 +1,30 @@
 variable "vpc_id" {
   type        = string
-  description = "ID of the VPC"
+  description = "VPC ID"
 }
 
-variable "cidr_block" {
+variable "igw_id" {
   type        = string
-  description = "CIDR block for the route"
+  description = "Internet Gateway ID"
 }
 
-variable "gateway_id" {
-  type        = string
-  description = "ID of the Internet Gateway or NAT Gateway"
+variable "public_subnet_ids" {
+  type        = list(string)
+  description = "List of public subnet IDs"
 }
 
-variable "rt_name" {
+variable "private_subnet_ids" {
+  type        = list(string)
+  description = "List of private subnet IDs"
+}
+
+variable "name" {
   type        = string
-  description = "Name tag for the Route Table"
+  description = "Prefix name for route tables"
+}
+
+variable "tags" {
+  type        = map(string)
+  default     = {}
+  description = "Common resource tags"
 }
