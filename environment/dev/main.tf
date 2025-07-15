@@ -21,28 +21,28 @@ module "igw" {
 }
 
 module "route_tables" {
-  source              = "../../modules/route-table"
-  vpc_id              = module.vpc.vpc_id
-  igw_id              = module.igw.igw_id
-  public_subnet_ids   = module.vpc.public_subnet_ids
-  private_subnet_ids  = module.vpc.private_subnet_ids
-  name                = var.vpc_name
-  tags                = var.tags
+  source             = "../../modules/route-table"
+  vpc_id             = module.vpc.vpc_id
+  igw_id             = module.igw.igw_id
+  public_subnet_ids  = module.vpc.public_subnet_ids
+  private_subnet_ids = module.vpc.private_subnet_ids
+  name               = var.vpc_name
+  tags               = var.tags
 }
 
 module "ec2_public" {
-  source               = "../../modules/ec2"
-  ami_id               = var.ami_id
-  instance_type        = var.instance_type
-  key_name             = var.key_name
-  subnet_ids           = module.vpc.public_subnet_ids
-  associate_public_ip  = true
-  security_group_ids   = [module.security_group.public_sg_id]
-  instance_count       = 1
-  root_volume_size     = 20
-  root_volume_type     = "gp3"
-  name                 = "${var.vpc_name}-pub"
-  tags                 = var.tags
+  source              = "../../modules/ec2"
+  ami_id              = var.ami_id
+  instance_type       = var.instance_type
+  key_name            = var.key_name
+  subnet_ids          = module.vpc.public_subnet_ids
+  associate_public_ip = true
+  security_group_ids  = [module.security_group.public_sg_id]
+  instance_count      = 1
+  root_volume_size    = 20
+  root_volume_type    = "gp3"
+  name                = "${var.vpc_name}-pub"
+  tags                = var.tags
 }
 
 module "security_group" {
@@ -56,16 +56,16 @@ module "security_group" {
 }
 
 module "s3_bucket" {
-  source                           = "../../modules/s3"
-  bucket_name                      = var.bucket_name
-  force_destroy                    = var.s3_force_destroy
-  versioning_enabled               = var.s3_versioning
-  encryption_algorithm             = var.s3_encryption
-  kms_key_id                       = var.s3_kms_key_id
-  lifecycle_id                     = var.s3_lifecycle_id
-  lifecycle_days                   = var.s3_lifecycle_days
+  source                             = "../../modules/s3"
+  bucket_name                        = var.bucket_name
+  force_destroy                      = var.s3_force_destroy
+  versioning_enabled                 = var.s3_versioning
+  encryption_algorithm               = var.s3_encryption
+  kms_key_id                         = var.s3_kms_key_id
+  lifecycle_id                       = var.s3_lifecycle_id
+  lifecycle_days                     = var.s3_lifecycle_days
   noncurrent_version_expiration_days = var.s3_noncurrent_expire_days
-  tags                             = var.tags
+  tags                               = var.tags
 }
 
 module "ecr_repo" {
@@ -83,20 +83,20 @@ module "ecr_repo" {
 }
 
 module "eks" {
-  source                    = "../../modules/eks"
-  cluster_name              = var.cluster_name
-  subnet_ids                = module.vpc.public_subnet_ids
-  endpoint_private_access   = var.endpoint_private_access
-  endpoint_public_access    = var.endpoint_public_access
+  source                     = "../../modules/eks"
+  cluster_name               = var.cluster_name
+  subnet_ids                 = module.vpc.public_subnet_ids
+  endpoint_private_access    = var.endpoint_private_access
+  endpoint_public_access     = var.endpoint_public_access
   cluster_security_group_ids = [module.security_group.public_sg_id]
-  service_ipv4_cidr         = var.service_ipv4_cidr
-  tags                      = var.tags
+  service_ipv4_cidr          = var.service_ipv4_cidr
+  tags                       = var.tags
 }
 
 module "ssh_key" {
-  source = "../../modules/ssh_key"
+  source    = "../../modules/ssh_key"
   algorithm = var.algorithm
-  rsa_bits = var.rsa_bits
-  key_name = var.key_name
-  filename = var.filename
+  rsa_bits  = var.rsa_bits
+  key_name  = var.key_name
+  filename  = var.filename
 }

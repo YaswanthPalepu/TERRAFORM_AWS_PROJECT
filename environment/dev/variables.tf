@@ -1,5 +1,5 @@
 variable "aws_region" {
-  type    = string
+  type = string
 }
 
 variable "vpc_cidr" {}
@@ -22,7 +22,7 @@ variable "private_subnet_cidrs" {
 }
 
 variable "tags" {
-  type    = map(string)
+  type = map(string)
 }
 variable "ami_id" {}
 variable "instance_type" {}
@@ -109,17 +109,17 @@ variable "service_ipv4_cidr" {
 
 variable "algorithm" {
   description = "type of algorithm using"
-  type = string
+  type        = string
 }
 variable "rsa_bits" {
   description = "number of bits for algorithm"
-  type = number
+  type        = number
 }
 variable "filename" {
   description = "name of the file"
-  type = string
+  type        = string
 }
 variable "key_name" {
   description = "name of the key to generate"
-  type = string
+  type        = string
 }
