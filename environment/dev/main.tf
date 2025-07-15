@@ -85,7 +85,6 @@ module "ecr_repo" {
 module "eks" {
   source                    = "../../modules/eks"
   cluster_name              = var.cluster_name
-  cluster_role_arn          = module.eks_role.arn
   subnet_ids                = module.vpc.public_subnet_ids
   endpoint_private_access   = var.endpoint_private_access
   endpoint_public_access    = var.endpoint_public_access

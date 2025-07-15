@@ -3,11 +3,6 @@ variable "cluster_name" {
   description = "Name of the EKS cluster"
 }
 
-variable "cluster_role_arn" {
-  type        = string
-  description = "IAM role ARN for the EKS cluster"
-}
-
 variable "subnet_ids" {
   type        = list(string)
   description = "Public subnet IDs to associate with the EKS cluster"

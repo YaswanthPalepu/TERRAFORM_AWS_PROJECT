@@ -15,18 +15,17 @@ resource "aws_s3_bucket_versioning" "this" {
   }
 }
 
-resource "aws_s3_bucket_encryption" "this" {
-  bucket = aws_s3_bucket.this.bucket
+resource "aws_s3_bucket_server_side_encryption_configuration" "this" {
+  bucket = aws_s3_bucket.this.id
 
-  server_side_encryption_configuration {
-    rule {
-      apply_server_side_encryption_by_default {
-        sse_algorithm     = var.encryption_algorithm
-        kms_master_key_id = var.kms_key_id != "" ? var.kms_key_id : null
-      }
+  rule {
+    apply_server_side_encryption_by_default {
+      sse_algorithm     = var.encryption_algorithm
+      kms_master_key_id = var.kms_key_id != "" ? var.kms_key_id : null
     }
   }
 }
+
 
 resource "aws_s3_bucket_public_access_block" "this" {
   bucket = aws_s3_bucket.this.id

@@ -6,9 +6,6 @@ output "public_subnet_ids" {
   value = module.vpc.public_subnet_ids
 }
 
-output "private_subnet_ids" {
-  value = module.vpc.private_subnet_ids
-}
 
 output "igw_id" {
   value = module.igw.igw_id
@@ -26,9 +23,6 @@ output "ec2_public_instance_ids" {
   value = module.ec2_public.instance_ids
 }
 
-output "ec2_private_instance_ids" {
-  value = module.ec2_private.instance_ids
-}
 output "public_sg_id" {
   value = module.security_group.sg_id
 }
@@ -49,4 +43,5 @@ output "ecr_repository_name" {
 output "ecr_repository_arn" {
   value = module.ecr_repo.ecr_repository_arn
 }
+
 

@@ -5,6 +5,8 @@ variable "aws_region" {
 variable "vpc_cidr" {}
 variable "vpc_name" {}
 variable "instance_tenancy" {
+  type    = string
+  default = "default"
 }
 
 variable "availability_zones" {
@@ -24,7 +26,6 @@ variable "tags" {
 }
 variable "ami_id" {}
 variable "instance_type" {}
-variable "key_name" {}
 variable "public_sg_ingress" {
   description = "Ingress rules for public EC2 SG"
   type = list(object({
@@ -49,12 +50,16 @@ variable "public_sg_egress" {
 
 variable "bucket_name" {}
 variable "s3_force_destroy" {
-
+  type    = bool
+  default = false
 }
 variable "s3_versioning" {
-  
+  type    = bool
+  default = false
 }
 variable "s3_encryption" {
+  type    = string
+  default = "AES256"
 }
 variable "s3_kms_key_id" {
   default = ""
