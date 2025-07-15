@@ -22,12 +22,13 @@ pipeline {
 
     stage('Terraform Init') {
       steps {
-        withCredentials([[
-          $class: 'AmazonWebServicesCredentialsBinding',
-          credentialsId: 'aws-creds'
-        ]]) 
         dir('environment/dev') {
-          sh 'terraform init'
+          withCredentials([[
+            $class: 'AmazonWebServicesCredentialsBinding',
+            credentialsId: 'aws-creds'
+          ]]) {
+            sh 'terraform init'
+          }
         }
       }
     }
@@ -55,12 +56,13 @@ pipeline {
         withCredentials([[
           $class: 'AmazonWebServicesCredentialsBinding',
           credentialsId: 'aws-creds'
-        ]]) 
+        ]]) {
         dir('environment/dev') {
           sh 'terraform plan -var-file="terraform.tfvars.json" -out=tfplan.out'
         }
       }
     }
+  }
 
     stage('Manual Approval (Prod Safety)') {
       steps {
@@ -73,12 +75,13 @@ pipeline {
         withCredentials([[
           $class: 'AmazonWebServicesCredentialsBinding',
           credentialsId: 'aws-creds'
-        ]]) 
+        ]]) {
         dir('environment/dev') {
           sh 'terraform apply -auto-approve tfplan.out'
         }
       }
     }
+  }
 
     stage('Terraform Output') {
       steps {
