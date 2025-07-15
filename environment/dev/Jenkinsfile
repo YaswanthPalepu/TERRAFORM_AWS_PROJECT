@@ -5,10 +5,6 @@ pipeline {
     AWS_REGION = 'us-east-1'
   }
 
-  tools {
-    terraform 'Terraform_1.6.6'  
-  }
-
   options {
     timestamps()
     disableConcurrentBuilds()
