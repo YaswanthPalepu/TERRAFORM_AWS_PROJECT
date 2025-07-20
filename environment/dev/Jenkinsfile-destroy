@@ -1,0 +1,131 @@
+pipeline {
+  agent any
+
+  environment {
+    AWS_REGION = 'us-east-1'
+  }
+
+  options {
+    timestamps()
+    disableConcurrentBuilds()
+    skipDefaultCheckout()
+  }
+
+  stages {
+
+    stage('Checkout Code') {
+      steps {
+        echo 'Cloning repository from GitHub...'
+        git branch: 'main', url: 'https://github.com/YaswanthPalepu/TERRAFORM_AWS_PROJECT.git'
+      }
+    }
+
+    stage('Terraform Init') {
+      steps {
+        dir('environment/dev') {
+          withCredentials([[
+            $class: 'AmazonWebServicesCredentialsBinding',
+            credentialsId: 'aws-creds'
+          ]]) {
+            sh 'terraform init'
+          }
+        }
+      }
+    }
+
+    stage('Terraform Format Check') {
+      steps {
+        echo '🧹 Checking Terraform formatting...'
+        dir('environment/dev') {
+          sh 'terraform fmt -check -recursive'
+        }
+      }
+    }
+
+    stage('Terraform Validate') {
+      steps {
+        echo '🔎 Validating Terraform configuration...'
+        dir('environment/dev') {
+          sh 'terraform validate'
+        }
+      }
+    }
+
+    stage('Terraform Plan') {
+      steps {
+        withCredentials([[
+          $class: 'AmazonWebServicesCredentialsBinding',
+          credentialsId: 'aws-creds'
+        ]]) {
+        dir('environment/dev') {
+          sh 'terraform plan -var-file="terraform.tfvars.json" -out=tfplan.out'
+        }
+      }
+    }
+  }
+
+    stage('Manual Approval (Prod Safety)') {
+      steps {
+        input message: 'Approve to apply Terraform changes to production?'
+      }
+    }
+
+    stage('Terraform Apply') {
+      steps {
+        withCredentials([[
+          $class: 'AmazonWebServicesCredentialsBinding',
+          credentialsId: 'aws-creds'
+        ]]) {
+        dir('environment/dev') {
+          sh 'terraform apply -auto-approve tfplan.out'
+        }
+      }
+    }
+  }
+
+    stage('Terraform Output') {
+      steps {
+        echo 'Fetching Terraform outputs...'
+        dir('environment/dev') {
+        sh 'terraform output'
+        }
+      }
+    }
+
+    stage('Manual Approval (Prod Safety)') {
+      steps {
+        input message: 'Approve to destroy Terraform ?'
+      }
+    }
+
+    stage('Terraform Destroy') {
+      steps {
+        withCredentials([[
+          $class: 'AmazonWebServicesCredentialsBinding',
+          credentialsId: 'aws-creds'
+        ]]) {
+        dir('environment/dev') {
+          sh 'terraform destroy -var-file="terraform.tfvars.json" -auto-approve'
+        }
+      }
+    }
+  }
+
+  }
+
+  post {
+    success {
+      echo 'Deployment completed successfully!'
+    }
+    failure {
+      echo 'Deployment failed.'
+    }
+    // No cleanWs() here — so your files, state, and logs are preserved
+  }
+}
+
+
+
+
+
+
