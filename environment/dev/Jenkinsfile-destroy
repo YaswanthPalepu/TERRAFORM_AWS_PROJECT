@@ -85,12 +85,17 @@ pipeline {
 
     stage('Terraform Output') {
       steps {
-        echo 'Fetching Terraform outputs...'
-        dir('environment/dev') {
-        sh 'terraform output'
-        }
+        withCredentials([[
+          $class: 'AmazonWebServicesCredentialsBinding',
+          credentialsId: 'aws-creds'
+        ]]) {
+          dir('environment/dev') {
+            echo 'Fetching Terraform outputs...'
+            sh 'terraform output'
       }
     }
+  }
+}
 
     stage('Manual Destroy Approval') {
       steps {
