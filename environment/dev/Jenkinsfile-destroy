@@ -92,7 +92,7 @@ pipeline {
       }
     }
 
-    stage('Manual Approval (Prod Safety)') {
+    stage('Manual Destroy Approval') {
       steps {
         input message: 'Approve to destroy Terraform ?'
       }
