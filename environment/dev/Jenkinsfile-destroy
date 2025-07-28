@@ -12,7 +12,6 @@ pipeline {
   }
 
   stages {
-
     stage('Checkout Code') {
       steps {
         echo 'Cloning repository from GitHub...'
@@ -35,7 +34,7 @@ pipeline {
 
     stage('Terraform Format Check') {
       steps {
-        echo '🧹 Checking Terraform formatting...'
+        echo ' Checking Terraform formatting...'
         dir('environment/dev') {
           sh 'terraform fmt -check -recursive'
         }
@@ -44,93 +43,54 @@ pipeline {
 
     stage('Terraform Validate') {
       steps {
-        echo '🔎 Validating Terraform configuration...'
+        echo ' Validating Terraform configuration...'
         dir('environment/dev') {
           sh 'terraform validate'
         }
       }
     }
 
-    stage('Terraform Plan') {
+    stage('Terraform Plan (Destroy Mode)') {
       steps {
-        withCredentials([[
-          $class: 'AmazonWebServicesCredentialsBinding',
-          credentialsId: 'aws-creds'
-        ]]) {
-        dir('environment/dev') {
-          sh 'terraform plan -var-file="terraform.tfvars.json" -out=tfplan.out'
-        }
-      }
-    }
-  }
-
-    stage('Manual Approval (Prod Safety)') {
-      steps {
-        input message: 'Approve to apply Terraform changes to production?'
-      }
-    }
-
-    stage('Terraform Apply') {
-      steps {
-        withCredentials([[
-          $class: 'AmazonWebServicesCredentialsBinding',
-          credentialsId: 'aws-creds'
-        ]]) {
-        dir('environment/dev') {
-          sh 'terraform apply -auto-approve tfplan.out'
-        }
-      }
-    }
-  }
-
-    stage('Terraform Output') {
-      steps {
+        echo ' Planning Terraform destroy...'
         withCredentials([[
           $class: 'AmazonWebServicesCredentialsBinding',
           credentialsId: 'aws-creds'
         ]]) {
           dir('environment/dev') {
-            echo 'Fetching Terraform outputs...'
-            sh 'terraform output'
+            sh 'terraform plan -destroy -var-file="terraform.tfvars.json" -out=destroy.tfplan'
+          }
+        }
       }
     }
-  }
-}
 
-    stage('Manual Destroy Approval') {
+    stage('Manual Approval to Destroy') {
       steps {
-        input message: 'Approve to destroy Terraform ?'
+        input message: '⚠️ Are you sure you want to destroy all resources in DEV environment?'
       }
     }
 
     stage('Terraform Destroy') {
       steps {
+        echo ' Destroying Terraform-managed infrastructure...'
         withCredentials([[
           $class: 'AmazonWebServicesCredentialsBinding',
           credentialsId: 'aws-creds'
         ]]) {
-        dir('environment/dev') {
-          sh 'terraform destroy -var-file="terraform.tfvars.json" -auto-approve'
+          dir('environment/dev') {
+            sh 'terraform apply -auto-approve destroy.tfplan'
+          }
         }
       }
     }
   }
 
-  }
-
   post {
     success {
-      echo 'Deployment completed successfully!'
+      echo '✅ Infrastructure destroyed successfully.'
     }
     failure {
-      echo 'Deployment failed.'
+      echo '❌ Terraform destroy failed.'
     }
-    // No cleanWs() here — so your files, state, and logs are preserved
   }
 }
-
-
-
-
-
-
